@@ -40,18 +40,19 @@ export const createI18nInstance = async (serviceName: string): Promise<I18nInsta
   await instance.use(backend).init({
     lng: "en",
     backend: {
-      loadPath: `./resources/locales/${serviceName}/{{lng}}.json`,
+      loadPath: `./resources/locales/{{lng}}/{{ns}}.json`,
     },
     fallbackLng: "en",
     preload: ["es", "en"],
+    ns: [serviceName, "common"],
+    defaultNS: serviceName,
+    fallbackNS: "common",
     debug: process.env.NODE_ENV === "development",
     interpolation: {
       escapeValue: false,
     },
     returnObjects: false,
     returnEmptyString: false,
-    ns: [serviceName],
-    defaultNS: serviceName,
   });
 
   serviceInstances.set(serviceName, instance);
