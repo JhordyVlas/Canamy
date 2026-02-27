@@ -1,5 +1,7 @@
 import { api } from "encore.dev/api";
 
+import t from "~lib/localization/helper.localization";
+
 interface RegisterResponse {
   message: string;
 }
@@ -12,7 +14,7 @@ export const register = api(
   },
   (): RegisterResponse => {
     return {
-      message: "Hello World",
+      message: t.auth("internal_error"),
     };
   },
 );

@@ -1,3 +1,9 @@
 import { Service } from "encore.dev/service";
 
-export default new Service("auth");
+import { createLocalizationMiddleware } from "~lib/localization";
+
+const localizationMiddleware = createLocalizationMiddleware("auth");
+
+export default new Service("auth", {
+  middlewares: [localizationMiddleware],
+});

@@ -109,8 +109,7 @@
       },
       "performance": {
         "noAccumulatingSpread": "error",
-        "noDelete": "warn",
-        "noBarrelFile": "warn"
+        "noDelete": "warn"
       }
     }
   },
