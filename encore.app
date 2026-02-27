@@ -1,0 +1,4 @@
+{
+  "id": "canamy",
+  "lang": "typescript"
+}

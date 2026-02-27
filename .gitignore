@@ -1,0 +1,11 @@
+# Encore
+.encore
+encore.gen.go
+encore.gen.cue
+/.encore
+node_modules
+/encore.gen
+
+# NX
+.nx/cache
+.nx/workspace-data

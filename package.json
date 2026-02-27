@@ -1,0 +1,28 @@
+{
+  "name": "canamy",
+  "private": true,
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "check": "bun run biome check .",
+    "prepare": "bun lefthook install",
+    "test": "encore test"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.4.4",
+    "@types/node": "24.10.15",
+    "lefthook": "^2.1.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18",
+    "nx": "22.5.3"
+  },
+  "dependencies": {
+    "encore.dev": "^1.54.2"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "^4.59.0"
+  }
+}

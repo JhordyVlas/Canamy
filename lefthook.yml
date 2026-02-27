@@ -1,0 +1,28 @@
+colors: true
+no_tty: false
+
+pre-commit:
+  commands:
+    check:
+      glob: "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}"
+      run: bunx @biomejs/biome check --write --no-errors-on-unmatched --files-ignore-unknown=true {staged_files}
+      stage_fixed: true
+
+post-checkout:
+  commands:
+    dependencies:
+      files: git diff-tree -r --name-only --no-commit-id HEAD@{1} HEAD
+      glob: "{package.json,bun.lock}"
+      run: bun install
+
+post-merge:
+  commands:
+    dependencies:
+      files: git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD
+      glob: "{package.json,bun.lock}"
+      run: bun install
+
+pre-push:
+  commands:
+    dependencies:
+      run: bun run test
