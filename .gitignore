@@ -9,3 +9,7 @@ node_modules
 # NX
 .nx/cache
 .nx/workspace-data
+
+# Prisma
+**/prisma/generated
+**/prisma/interfaces.ts

@@ -1,0 +1,16 @@
+generator client {
+    provider = "prisma-client"
+    output   = "./generated"
+}
+
+generator typescriptInterfaces {
+    provider    = "prisma-generator-typescript-interfaces"
+    bigIntType  = "string"
+    decimalType = "string"
+    bytesType   = "number[]"
+    relations   = "none"
+}
+
+datasource db {
+    provider = "postgresql"
+}
