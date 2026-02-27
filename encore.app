@@ -1,4 +1,4 @@
 {
-  "id": "canamy",
+  "id": "canamy-yxgi",
   "lang": "typescript"
 }
