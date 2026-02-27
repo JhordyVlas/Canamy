@@ -13,6 +13,13 @@
         "{workspaceRoot}/micros/auth/prisma/generated",
         "{workspaceRoot}/micros/auth/prisma/interfaces.ts"
       ]
+    },
+    "prisma:push": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "encore exec -- bunx prisma db push",
+        "cwd": "micros/auth"
+      }
     }
   }
 }

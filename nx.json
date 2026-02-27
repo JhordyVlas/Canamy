@@ -3,6 +3,9 @@
   "targetDefaults": {
     "prisma:generate": {
       "cache": true
+    },
+    "prisma:push": {
+      "cache": false
     }
   }
 }
