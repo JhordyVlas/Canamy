@@ -25,7 +25,7 @@ model User {
     fullName       String    @map("full_name")
     email          String    @unique
     password       String
-    language       Language
+    language       Language  @default(es)
     isAdmin        Boolean   @default(false) @map("is_admin")
     selectedTeamId String?   @map("selected_team_id")
     verifiedAt     DateTime? @map("verified_at")
