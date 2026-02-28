@@ -1,2 +1,2 @@
 AUTH_SECRET_KEY: "secret"
-AUTH_DB_URL: "postgresql://canamy-yxgi:local@127.0.0.1:9500/auth?sslmode=disable"
+AUTH_DB_URL: "postgres://postgres:postgres@localhost:5222/auth"

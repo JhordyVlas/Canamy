@@ -1,10 +1,9 @@
-import { api } from "encore.dev/api";
-import { prisma } from "../prisma/client";
+import { APIError, api } from "encore.dev/api";
+import type { RegisterRequest, RegisterResponse } from "../schemas/auth.schemas";
+import AuthService from "../services/auth.service";
+import TokenService from "../services/token.service";
+import UserService from "../services/user.service";
 import t from "~lib/localization/helper.localization";
-
-interface RegisterResponse {
-  message: string;
-}
 
 export const register = api(
   {
@@ -12,17 +11,18 @@ export const register = api(
     path: "/auth/register",
     expose: true,
   },
-  async (): Promise<RegisterResponse> => {
-    const _user = await prisma.user.create({
-      data: {
-        email: "vlas@vlas.com",
-        fullName: "Vlas",
-        password: "123456",
-      },
-    });
+  async (request: RegisterRequest): Promise<RegisterResponse> => {
+    if (await UserService.CheckIfUserExists(request.email)) {
+      throw APIError.alreadyExists(t.auth("email_already_exists"));
+    }
+
+    const user = await AuthService.RegisterUser(request);
+    const token = await TokenService.GenAuthToken(user.id);
+    const session = AuthService.CreateCookie(token);
 
     return {
-      message: t.auth("internal_error"),
+      user,
+      session,
     };
   },
 );
