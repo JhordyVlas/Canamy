@@ -1,5 +1,4 @@
 import log from "encore.dev/log";
-
 import { createTranslationFunction, getCurrentT } from "./i18n";
 
 type ServiceKey = "auth" | "mail";

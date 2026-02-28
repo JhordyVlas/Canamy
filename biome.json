@@ -14,7 +14,8 @@
       "!**/dist",
       "!**/build",
       "!**/coverage",
-      "!**/.encore"
+      "!**/.encore",
+      "!**/*.prisma"
     ],
     "ignoreUnknown": true,
     "maxSize": 1048576
@@ -120,15 +121,7 @@
         "organizeImports": {
           "level": "on",
           "options": {
-            "groups": [
-              ":NODE:",
-              ":BLANK_LINE:",
-              ":PACKAGE:",
-              ":BLANK_LINE:",
-              ":SOURCE:",
-              ":BLANK_LINE:",
-              ":PATH:"
-            ]
+            "groups": [":NODE:", ":PACKAGE:", ":SOURCE:", ":PATH:"]
           }
         }
       }

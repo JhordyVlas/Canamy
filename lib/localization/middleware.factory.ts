@@ -1,6 +1,5 @@
 import { middleware } from "encore.dev/api";
 import log from "encore.dev/log";
-
 import { createI18nInstance, runWithLocaleContext } from "./i18n";
 import type { I18nInstance, TranslationFunction } from "./types";
 

@@ -1,5 +1,4 @@
 import { Service } from "encore.dev/service";
-
 import { createLocalizationMiddleware } from "~lib/localization";
 
 const localizationMiddleware = createLocalizationMiddleware("auth");

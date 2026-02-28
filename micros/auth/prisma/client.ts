@@ -1,5 +1,4 @@
 import { PrismaPg } from "@prisma/adapter-pg";
-
 import { authDB } from "./database";
 import { PrismaClient } from "./generated/client";
 

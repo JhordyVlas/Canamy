@@ -1,5 +1,5 @@
 import { api } from "encore.dev/api";
-
+import { prisma } from "../prisma/client";
 import t from "~lib/localization/helper.localization";
 
 interface RegisterResponse {
@@ -12,7 +12,15 @@ export const register = api(
     path: "/auth/register",
     expose: true,
   },
-  (): RegisterResponse => {
+  async (): Promise<RegisterResponse> => {
+    const _user = await prisma.user.create({
+      data: {
+        email: "vlas@vlas.com",
+        fullName: "Vlas",
+        password: "123456",
+      },
+    });
+
     return {
       message: t.auth("internal_error"),
     };

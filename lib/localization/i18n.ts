@@ -1,8 +1,6 @@
 import { AsyncLocalStorage } from "node:async_hooks";
-
 import i18next, { type TFunction } from "i18next";
 import backend from "i18next-fs-backend";
-
 import type { I18nInstance, LocaleContext, TranslationFunction } from "./types";
 
 const localeStorage = new AsyncLocalStorage<LocaleContext>();
