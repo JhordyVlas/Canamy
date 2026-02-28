@@ -15,7 +15,7 @@
       "!**/build",
       "!**/coverage",
       "!**/.encore",
-      "!**/*.prisma"
+      "!!**/*.prisma"
     ],
     "ignoreUnknown": true,
     "maxSize": 1048576

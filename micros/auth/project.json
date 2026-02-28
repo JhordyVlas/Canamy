@@ -17,7 +17,14 @@
     "prisma:push": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "encore exec -- bunx prisma db push",
+        "command": "encore exec -- bunx prisma db push --force-reset",
+        "cwd": "micros/auth"
+      }
+    },
+    "prisma:seed": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "encore exec -- bun run prisma/seed/seeder.ts",
         "cwd": "micros/auth"
       }
     }

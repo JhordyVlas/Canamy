@@ -8,7 +8,8 @@
     "prepare": "bun lefthook install",
     "test": "vitest",
     "prisma:generate": "nx run-many -t prisma:generate --verbose",
-    "prisma:push": "nx run-many -t prisma:push --verbose"
+    "prisma:push": "nx run-many -t prisma:push --verbose",
+    "prisma:seed": "nx run-many -t prisma:seed --verbose"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.4",
