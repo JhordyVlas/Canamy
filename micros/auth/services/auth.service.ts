@@ -1,6 +1,7 @@
+import { verify } from "argon2";
 import type { CookieWithOptions } from "encore.dev/api";
 import { prisma } from "../prisma/client";
-import type { RegisterRequest } from "../schemas/auth.schemas";
+import type { LoginUserRequest, RegisterRequest } from "../schemas/auth.schemas";
 import UserService from "./user.service";
 
 const RegisterUser = async (input: RegisterRequest) => {
@@ -77,9 +78,24 @@ const CreateCookie = (value: string | Record<string, never>): CookieWithOptions<
   };
 };
 
+const CheckUserCredentials = async ({ email, password }: LoginUserRequest) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      email,
+    },
+  });
+  if (!user) return false;
+
+  const isValid = await verify(user.password, password);
+  if (!isValid) return false;
+
+  return user;
+};
+
 const AuthService = {
   RegisterUser,
   CreateCookie,
+  CheckUserCredentials,
 };
 
 export default AuthService;

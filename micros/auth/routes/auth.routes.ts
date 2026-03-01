@@ -1,5 +1,10 @@
 import { APIError, api } from "encore.dev/api";
-import type { RegisterRequest, RegisterResponse } from "../schemas/auth.schemas";
+import type {
+  LoginResponse,
+  LoginUserRequest,
+  RegisterRequest,
+  RegisterResponse,
+} from "../schemas/auth.schemas";
 import AuthService from "../services/auth.service";
 import TokenService from "../services/token.service";
 import UserService from "../services/user.service";
@@ -17,6 +22,22 @@ export const register = api(
     }
 
     const user = await AuthService.RegisterUser(request);
+    const token = await TokenService.GenAuthToken(user.id);
+    const session = AuthService.CreateCookie(token);
+
+    return {
+      ...user,
+      session,
+    };
+  },
+);
+
+export const login = api(
+  { method: "POST", path: "/auth/login", expose: true },
+  async (request: LoginUserRequest): Promise<LoginResponse> => {
+    const user = await AuthService.CheckUserCredentials(request);
+    if (!user) throw APIError.unauthenticated(t.auth("invalid_credentials"));
+
     const token = await TokenService.GenAuthToken(user.id);
     const session = AuthService.CreateCookie(token);
 

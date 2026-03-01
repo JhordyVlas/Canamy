@@ -15,3 +15,10 @@ interface SerializedUser extends Omit<User, "password" | "id" | "selectedTeamId"
 export interface RegisterResponse extends SerializedUser {
   session: Cookie<"session">;
 }
+
+export interface LoginUserRequest {
+  email: string;
+  password: string;
+}
+
+export interface LoginResponse extends RegisterResponse {}
