@@ -23,7 +23,7 @@ export const createLocalizationMiddleware = (serviceName: string) => {
 
         const i18nInstance = await i18nInstancePromise;
 
-        const lang = parseAcceptLanguage(req.requestMeta.headers["accept-language"]);
+        const lang = parseAcceptLanguage(req.requestMeta.headers["Accept-Language"]);
 
         await i18nInstance.changeLanguage(lang);
         const tFunction = i18nInstance.getFixedT(lang);

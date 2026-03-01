@@ -8,6 +8,8 @@ import type {
 import AuthService from "../services/auth.service";
 import TokenService from "../services/token.service";
 import UserService from "../services/user.service";
+import { Auth } from "~lib/auth/auth";
+import type { DefaultResponse } from "~lib/common/schemas";
 import t from "~lib/localization/helper.localization";
 
 export const register = api(
@@ -44,6 +46,23 @@ export const login = api(
     return {
       ...user,
       session,
+    };
+  },
+);
+
+export const logout = api(
+  {
+    method: "DELETE",
+    path: "/auth/logout",
+    expose: true,
+    auth: true,
+  },
+  async (): Promise<DefaultResponse> => {
+    const user = Auth();
+    await TokenService.RevokeAuthTokens(user.userID);
+
+    return {
+      message: t.auth("logout_success"),
     };
   },
 );
