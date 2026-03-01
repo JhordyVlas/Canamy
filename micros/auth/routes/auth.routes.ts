@@ -21,7 +21,7 @@ export const register = api(
     const session = AuthService.CreateCookie(token);
 
     return {
-      user,
+      ...user,
       session,
     };
   },

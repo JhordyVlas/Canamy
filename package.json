@@ -6,26 +6,29 @@
   "scripts": {
     "check": "bun run biome check .",
     "prepare": "bun lefthook install",
-    "test": "vitest",
+    "test": "node --enable-source-maps bin/test.ts e2e",
     "prisma:generate": "nx run-many -t prisma:generate --verbose",
     "prisma:push": "nx run-many -t prisma:push --verbose",
     "prisma:seed": "nx run-many -t prisma:seed --verbose"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.4",
+    "@faker-js/faker": "^10.3.0",
+    "@japa/api-client": "^3.2.1",
+    "@japa/expect": "^3.0.7",
+    "@japa/runner": "^5.3.0",
+    "@types/i18next": "^13.0.0",
     "@types/node": "24.10.15",
     "@types/pg": "^8.16.0",
     "lefthook": "^2.1.1",
     "nx": "22.5.3",
     "prisma": "^7.4.2",
     "prisma-generator-typescript-interfaces": "^3.1.0",
-    "typescript": "^5.9.3",
-    "vitest": "^4.0.18"
+    "typescript": "^5.9.3"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.4.1",
     "@prisma/client": "^7.4.2",
-    "@types/i18next": "^13.0.0",
     "argon2": "^0.44.0",
     "encore.dev": "^1.54.2",
     "i18next": "^25.8.13",

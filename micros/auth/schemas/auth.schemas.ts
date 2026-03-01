@@ -12,7 +12,6 @@ export interface RegisterRequest {
 
 interface SerializedUser extends Omit<User, "password" | "id" | "selectedTeamId"> {}
 
-export interface RegisterResponse {
-  user: SerializedUser;
+export interface RegisterResponse extends SerializedUser {
   session: Cookie<"session">;
 }

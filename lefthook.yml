@@ -22,7 +22,7 @@ post-merge:
       glob: "{package.json,bun.lock}"
       run: bun install
 
-# pre-push:
-#   commands:
-#     dependencies:
-#       run: bun run test
+pre-push:
+  commands:
+    dependencies:
+      run: bun run test
