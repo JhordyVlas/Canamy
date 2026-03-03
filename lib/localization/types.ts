@@ -23,3 +23,7 @@ export type SupportedLanguage = "es" | "en";
 declare global {
   var __CURRENT_SERVICE_NAME__: string | undefined;
 }
+
+export type CommonTranslations = typeof import("../../resources/locales/en/common.json");
+export type AuthTranslations = typeof import("../../resources/locales/en/auth.json");
+export type MailTranslations = typeof import("../../resources/locales/en/mail.json");
