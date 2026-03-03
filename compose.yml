@@ -14,6 +14,15 @@ services:
     networks:
       - canamy
 
+  mailpit:
+    container_name: Canamy.MAIL
+    image: "axllent/mailpit:latest"
+    ports:
+      - 1020:1025
+      - 8020:8025
+    networks:
+      - canamy
+
 networks:
   canamy:
     driver: bridge

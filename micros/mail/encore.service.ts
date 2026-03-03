@@ -1,3 +1,8 @@
 import { Service } from "encore.dev/service";
+import { createLocalizationMiddleware } from "~lib/localization/middleware.factory";
 
-export default new Service("mail");
+const localizationMiddleware = createLocalizationMiddleware("mail");
+
+export default new Service("mail", {
+  middlewares: [localizationMiddleware],
+});

@@ -1,10 +1,11 @@
+import type { SupportedLanguage } from "~lib/localization/types";
+
 export interface EmailData {
   email: string;
-  language: string;
+  language: SupportedLanguage;
 }
 
-export interface VerifyEmailData {
-  fullName: string;
+export interface VerifyEmailData extends EmailData {
+  name: string;
   code: string;
-  language: string;
 }

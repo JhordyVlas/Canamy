@@ -8,6 +8,7 @@ import type {
 import AuthService from "../services/auth.service";
 import TokenService from "../services/token.service";
 import UserService from "../services/user.service";
+import { mail } from "~encore/clients";
 import { Auth } from "~lib/auth/auth";
 import type { DefaultResponse } from "~lib/common/schemas";
 import t from "~lib/localization/helper.localization";
@@ -24,8 +25,20 @@ export const register = api(
     }
 
     const user = await AuthService.RegisterUser(request);
-    const token = await TokenService.GenAuthToken(user.id);
+
+    const [token, code] = await Promise.all([
+      TokenService.GenAuthToken(user.id),
+      TokenService.GenAuthToken(user.id, 3, 3),
+    ]);
+
     const session = AuthService.CreateCookie(token);
+
+    await mail.verifyMail({
+      code,
+      email: request.email,
+      language: "en",
+      name: request.name,
+    });
 
     return {
       ...user,
@@ -63,6 +76,25 @@ export const logout = api(
 
     return {
       message: t("logout_success"),
+    };
+  },
+);
+
+export const resendVerificationMail = api(
+  { expose: true, auth: true, method: "POST", path: "/auth/resend-verification-mail" },
+  async (): Promise<DefaultResponse> => {
+    const user = Auth();
+    const code = await TokenService.GenAuthToken(user.userID, 3, 3);
+
+    await mail.verifyMail({
+      code,
+      email: user.email,
+      language: user.language,
+      name: user.name,
+    });
+
+    return {
+      message: t("operation_success"),
     };
   },
 );

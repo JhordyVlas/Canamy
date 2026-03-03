@@ -10,7 +10,7 @@ interface AuthParams {
 
 export const authGateway = authHandler<AuthParams, AuthData>(async ({ session }) => {
   const user = await TokenService.ValidateToken(session.value);
-  if (!user) throw new APIError(ErrCode.Unauthenticated, t.auth("unauthenticated"));
+  if (!user) throw new APIError(ErrCode.Unauthenticated, t("unauthenticated"));
 
   return {
     userID: user.id,
@@ -19,6 +19,7 @@ export const authGateway = authHandler<AuthParams, AuthData>(async ({ session })
     selectedTeamId: user.selectedTeamId,
     email: user.email,
     verifiedAt: user.verifiedAt,
+    language: user.language,
   };
 });
 

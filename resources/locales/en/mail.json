@@ -1,0 +1,9 @@
+{
+  "templates": {
+    "verify": {
+      "subject": "Verify your email",
+      "title": "You are almost there!",
+      "body": "Hi {{name}}, this is your verification code:"
+    }
+  }
+}
