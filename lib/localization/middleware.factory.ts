@@ -1,46 +1,58 @@
 import { middleware } from "encore.dev/api";
 import log from "encore.dev/log";
-import { createI18nInstance, runWithLocaleContext } from "./i18n";
-import type { I18nInstance, TranslationFunction } from "./types";
+import { createI18nInstance, getSyncTranslation, runWithLocaleContext } from "./i18n";
+import type { I18nInstance, SupportedLanguage } from "./types";
 
-const parseAcceptLanguage = (acceptLang?: string | string[]): string => {
+const parseAcceptLanguage = (acceptLang?: string | string[]): SupportedLanguage => {
   const langString = Array.isArray(acceptLang) ? acceptLang[0] : acceptLang;
   if (!langString) return "es";
 
   const primaryLang = langString.split(",")[0].split("-")[0].split(";")[0].toLowerCase();
-  return ["es", "en"].includes(primaryLang) ? primaryLang : "es";
+  return ["es", "en"].includes(primaryLang) ? (primaryLang as SupportedLanguage) : "es";
+};
+
+const getAcceptLanguageHeader = (
+  headers: Record<string, string | string[] | undefined>,
+): string | string[] | undefined => {
+  // Intentar diferentes variaciones de capitalización
+  return (
+    headers["Accept-Language"] ||
+    headers["accept-language"] ||
+    headers["ACCEPT-LANGUAGE"] ||
+    headers["Accept-language"]
+  );
 };
 
 export const createLocalizationMiddleware = (serviceName: string) => {
   let i18nInstancePromise: Promise<I18nInstance> | null = null;
 
+  // Establecer el nombre del servicio globalmente para t.sync
+  globalThis.__CURRENT_SERVICE_NAME__ = serviceName;
+
   return middleware(async (req, next) => {
     if (req.requestMeta?.type === "api-call") {
       try {
+        // Inicializar y precargar traducciones una sola vez
         if (!i18nInstancePromise) {
           i18nInstancePromise = createI18nInstance(serviceName);
         }
 
-        const i18nInstance = await i18nInstancePromise;
+        await i18nInstancePromise;
 
-        const lang = parseAcceptLanguage(req.requestMeta.headers["Accept-Language"]);
+        // Obtener idioma del request
+        const acceptLanguageHeader = getAcceptLanguageHeader(req.requestMeta.headers);
+        const lang = parseAcceptLanguage(acceptLanguageHeader);
 
-        await i18nInstance.changeLanguage(lang);
-        const tFunction = i18nInstance.getFixedT(lang);
+        // Obtener función de traducción síncrona precargada
+        const t = getSyncTranslation(serviceName, lang);
 
-        const t: TranslationFunction = (
-          key: string,
-          options?: Record<string, string | number>,
-        ): string => {
-          const result = tFunction(key, options);
-          return typeof result === "string" ? result : String(result);
-        };
-
+        // Ejecutar el request dentro del contexto de locale
         return runWithLocaleContext(lang, t, () => next(req));
-      } catch {
-        log.error(`Localization middleware error for service ${serviceName}:`);
+      } catch (error) {
+        log.error(`Localization middleware error for service ${serviceName}:`, error);
 
-        const fallbackT: TranslationFunction = (key: string) => key;
+        // Fallback: usar traducciones en español
+        const fallbackT = getSyncTranslation(serviceName, "es");
         return runWithLocaleContext("es", fallbackT, () => next(req));
       }
     }

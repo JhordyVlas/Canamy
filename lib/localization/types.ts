@@ -5,6 +5,12 @@ export type TranslationFunction = (
   options?: Record<string, string | number>,
 ) => string;
 
+export type SyncTranslationFunction = (
+  lang: string,
+  key: string,
+  options?: Record<string, string | number>,
+) => string;
+
 export interface LocaleContext {
   locale: string;
   t: TranslationFunction;
@@ -12,3 +18,12 @@ export interface LocaleContext {
 
 export type I18nInstance = i18n;
 export type InterpolationOptions = Record<string, string | number | boolean>;
+export type SupportedLanguage = "es" | "en";
+
+/**
+ * Extensión de globalThis para almacenar el nombre del servicio actual.
+ * Usado por t.sync() para determinar qué traducciones cargar.
+ */
+declare global {
+  var __CURRENT_SERVICE_NAME__: string | undefined;
+}

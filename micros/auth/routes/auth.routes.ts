@@ -20,7 +20,7 @@ export const register = api(
   },
   async (request: RegisterRequest): Promise<RegisterResponse> => {
     if (await UserService.CheckIfUserExists(request.email)) {
-      throw APIError.alreadyExists(t.auth("email_already_exists"));
+      throw APIError.alreadyExists(t("internal_error"));
     }
 
     const user = await AuthService.RegisterUser(request);
@@ -38,7 +38,7 @@ export const login = api(
   { method: "POST", path: "/auth/login", expose: true },
   async (request: LoginUserRequest): Promise<LoginResponse> => {
     const user = await AuthService.CheckUserCredentials(request);
-    if (!user) throw APIError.unauthenticated(t.auth("invalid_credentials"));
+    if (!user) throw APIError.unauthenticated(t("unauthenticated"));
 
     const token = await TokenService.GenAuthToken(user.id);
     const session = AuthService.CreateCookie(token);
@@ -62,7 +62,7 @@ export const logout = api(
     await TokenService.RevokeAuthTokens(user.userID);
 
     return {
-      message: t.auth("logout_success"),
+      message: t("logout_success"),
     };
   },
 );
