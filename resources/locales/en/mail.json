@@ -4,6 +4,11 @@
       "subject": "Verify your email",
       "title": "You are almost there!",
       "body": "Hi {{name}}, this is your verification code:"
+    },
+    "forgot_password": {
+      "subject": "Reset your password",
+      "title": "Hi {{name}}",
+      "body": "This a code for reset your password, if you dont know it, please ignore this email."
     }
   }
 }

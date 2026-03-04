@@ -92,10 +92,24 @@ const CheckUserCredentials = async ({ email, password }: LoginUserRequest) => {
   return user;
 };
 
+const ChangeUserPassword = async (userId: string, password: string) => {
+  const hashedPassword = await UserService.HashPassword(password);
+
+  return await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      password: hashedPassword,
+    },
+  });
+};
+
 const AuthService = {
   RegisterUser,
   CreateCookie,
   CheckUserCredentials,
+  ChangeUserPassword,
 };
 
 export default AuthService;

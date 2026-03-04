@@ -9,3 +9,8 @@ export interface VerifyEmailData extends EmailData {
   name: string;
   code: string;
 }
+
+export interface ForgotPasswordData extends EmailData {
+  name: string;
+  code: string;
+}

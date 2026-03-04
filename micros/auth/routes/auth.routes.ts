@@ -1,9 +1,11 @@
 import { APIError, api } from "encore.dev/api";
 import type {
+  ForgotPasswordRequest,
   LoginResponse,
   LoginUserRequest,
   RegisterRequest,
   RegisterResponse,
+  ResetPasswordRequest,
 } from "../schemas/auth.schemas";
 import AuthService from "../services/auth.service";
 import TokenService from "../services/token.service";
@@ -92,6 +94,54 @@ export const resendVerificationMail = api(
       language: user.language,
       name: user.name,
     });
+
+    return {
+      message: t("operation_success"),
+    };
+  },
+);
+
+export const forgotPassword = api(
+  {
+    expose: true,
+    method: "POST",
+    path: "/auth/forgot-password",
+  },
+  async (input: ForgotPasswordRequest): Promise<DefaultResponse> => {
+    const user = await UserService.GetUserByEmail(input.email);
+
+    if (user) {
+      const code = await TokenService.GenAuthToken(user.id, 3, 3);
+
+      await mail.forgotPasswordMail({
+        code,
+        email: user.email,
+        language: user.language,
+        name: user.name,
+      });
+    }
+
+    return {
+      message: t("forgot_password_sent"),
+    };
+  },
+);
+
+export const resetPassword = api(
+  {
+    expose: true,
+    method: "POST",
+    path: "/auth/reset-password",
+  },
+  async (input: ResetPasswordRequest): Promise<DefaultResponse> => {
+    const user = await UserService.GetUserByEmail(input.email);
+    if (!user) throw APIError.unauthenticated(t("invalid_credentials"));
+
+    const validUser = await TokenService.ValidateToken(input.code, user.id);
+    if (!validUser) throw APIError.unauthenticated(t("invalid_credentials"));
+
+    await AuthService.ChangeUserPassword(user.id, input.password);
+    await TokenService.RevokeAuthTokens(user.id);
 
     return {
       message: t("operation_success"),

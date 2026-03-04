@@ -20,9 +20,18 @@ const HashPassword = async (password: string) => {
   });
 };
 
+const GetUserByEmail = async (email: string) => {
+  return await prisma.user.findUnique({
+    where: {
+      email,
+    },
+  });
+};
+
 const UserService = {
   CheckIfUserExists,
   HashPassword,
+  GetUserByEmail,
 };
 
 export default UserService;

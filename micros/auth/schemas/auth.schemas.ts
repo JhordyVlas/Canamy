@@ -22,3 +22,13 @@ export interface LoginUserRequest {
 }
 
 export interface LoginResponse extends RegisterResponse {}
+
+export interface ForgotPasswordRequest {
+  email: string & IsEmail;
+}
+
+export interface ResetPasswordRequest {
+  email: string;
+  code: string;
+  password: string & MinLen<8>;
+}
