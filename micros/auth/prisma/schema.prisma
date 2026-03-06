@@ -4,11 +4,13 @@ generator client {
 }
 
 generator typescriptInterfaces {
-    provider    = "prisma-generator-typescript-interfaces"
-    bigIntType  = "string"
-    decimalType = "string"
-    bytesType   = "number[]"
-    relations   = "none"
+    provider          = "prisma-generator-typescript-interfaces"
+    bigIntType        = "string"
+    decimalType       = "string"
+    bytesType         = "number[]"
+    relations         = "none"
+    jsonType          = "string"
+    optionalNullables = true
 }
 
 datasource db {
@@ -42,9 +44,8 @@ model User {
 }
 
 model Team {
-    id       String @id @default(uuid(7))
-    name     String
-    settings Json?
+    id   String @id @default(uuid(7))
+    name String
 
     createdAt DateTime     @default(now()) @map("created_at")
     updatedAt DateTime     @updatedAt @map("updated_at")
