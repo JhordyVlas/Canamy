@@ -22,24 +22,12 @@ const RegisterUser = async (input: RegisterRequest) => {
       }),
     ]);
 
-    const [teamMember, permission] = await Promise.all([
-      tx.teamMember.create({
-        data: {
-          userId: user.id,
-          teamId: team.id,
-        },
-      }),
-      tx.permission.findFirst({
-        where: {
-          action: "manage",
-          subject: "team",
-        },
-      }),
-    ]);
-
-    if (!permission) {
-      throw new Error("No permission found");
-    }
+    const teamMember = await tx.teamMember.create({
+      data: {
+        userId: user.id,
+        teamId: team.id,
+      },
+    });
 
     const [updatedUser] = await Promise.all([
       tx.user.update({
@@ -50,10 +38,11 @@ const RegisterUser = async (input: RegisterRequest) => {
           selectedTeamId: team.id,
         },
       }),
-      tx.access.create({
+      tx.claim.create({
         data: {
           teamMemberId: teamMember.id,
-          permissionId: permission.id,
+          action: "owner",
+          subject: "team",
         },
       }),
     ]);
@@ -92,7 +81,12 @@ const CheckUserCredentials = async ({ email, password }: LoginUserRequest) => {
   return user;
 };
 
-const ChangeUserPassword = async (userId: string, password: string) => {
+interface ChangeUserPasswordArgs {
+  userId: string;
+  password: string;
+}
+
+const ChangeUserPassword = async ({ userId, password }: ChangeUserPasswordArgs) => {
   const hashedPassword = await UserService.HashPassword(password);
 
   return await prisma.user.update({

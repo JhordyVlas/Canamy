@@ -11,7 +11,7 @@ import AuthService from "../services/auth.service";
 import TokenService from "../services/token.service";
 import UserService from "../services/user.service";
 import { mail } from "~encore/clients";
-import { Auth } from "~lib/auth/auth";
+import { Auth } from "~lib/auth/facade";
 import type { DefaultResponse } from "~lib/common/schemas";
 import t from "~lib/localization/helper.localization";
 
@@ -29,8 +29,14 @@ export const register = api(
     const user = await AuthService.RegisterUser(request);
 
     const [token, code] = await Promise.all([
-      TokenService.GenAuthToken(user.id),
-      TokenService.GenAuthToken(user.id, 3, 3),
+      TokenService.GenAuthToken({
+        userId: user.id,
+      }),
+      TokenService.GenAuthToken({
+        userId: user.id,
+        min: 3,
+        max: 3,
+      }),
     ]);
 
     const session = AuthService.CreateCookie(token);
@@ -55,7 +61,9 @@ export const login = api(
     const user = await AuthService.CheckUserCredentials(request);
     if (!user) throw APIError.unauthenticated(t("unauthenticated"));
 
-    const token = await TokenService.GenAuthToken(user.id);
+    const token = await TokenService.GenAuthToken({
+      userId: user.id,
+    });
     const session = AuthService.CreateCookie(token);
 
     return {
@@ -86,7 +94,12 @@ export const resendVerificationMail = api(
   { expose: true, auth: true, method: "POST", path: "/auth/resend-verification-mail" },
   async (): Promise<DefaultResponse> => {
     const user = Auth();
-    const code = await TokenService.GenAuthToken(user.userID, 3, 3);
+
+    const code = await TokenService.GenAuthToken({
+      userId: user.userID,
+      min: 3,
+      max: 3,
+    });
 
     await mail.verifyMail({
       code,
@@ -111,7 +124,11 @@ export const forgotPassword = api(
     const user = await UserService.GetUserByEmail(input.email);
 
     if (user) {
-      const code = await TokenService.GenAuthToken(user.id, 3, 3);
+      const code = await TokenService.GenAuthToken({
+        userId: user.id,
+        min: 3,
+        max: 3,
+      });
 
       await mail.forgotPasswordMail({
         code,
@@ -137,10 +154,17 @@ export const resetPassword = api(
     const user = await UserService.GetUserByEmail(input.email);
     if (!user) throw APIError.unauthenticated(t("invalid_credentials"));
 
-    const validUser = await TokenService.ValidateToken(input.code, user.id);
+    const validUser = await TokenService.ValidateToken({
+      plainToken: input.code,
+      userId: user.id,
+    });
     if (!validUser) throw APIError.unauthenticated(t("invalid_credentials"));
 
-    await AuthService.ChangeUserPassword(user.id, input.password);
+    await AuthService.ChangeUserPassword({
+      userId: user.id,
+      password: input.password,
+    });
+
     await TokenService.RevokeAuthTokens(user.id);
 
     return {

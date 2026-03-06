@@ -4,7 +4,12 @@ import type { Prisma } from "../prisma/generated/client";
 import authConfig from "../secrets.config";
 import Generate from "~lib/utils/gen.util";
 
-const genPlainToken = (min: number, max: number) => {
+interface GenPlainTokenArgs {
+  min: number;
+  max: number;
+}
+
+const genPlainToken = ({ min, max }: GenPlainTokenArgs) => {
   const salt = Generate.Num(min, max);
   return crypto.randomBytes(salt).toString("hex");
 };
@@ -13,8 +18,14 @@ const genHashedToken = (plainToken: string) => {
   return crypto.createHmac("sha256", authConfig.secretKey()).update(plainToken).digest("hex");
 };
 
-const GenAuthToken = async (userId: string, min = 16, max = 32) => {
-  const plainToken = genPlainToken(min, max);
+interface GenAuthTokenArgs {
+  userId: string;
+  min?: number;
+  max?: number;
+}
+
+const GenAuthToken = async ({ userId, min = 10, max = 30 }: GenAuthTokenArgs) => {
+  const plainToken = genPlainToken({ min, max });
   const hashedToken = genHashedToken(plainToken);
 
   await prisma.token.create({
@@ -28,7 +39,12 @@ const GenAuthToken = async (userId: string, min = 16, max = 32) => {
   return plainToken;
 };
 
-const ValidateToken = async (plainToken: string, userId?: string) => {
+interface ValidateTokenArgs {
+  plainToken: string;
+  userId?: string;
+}
+
+const ValidateToken = async ({ plainToken, userId }: ValidateTokenArgs) => {
   const hashedToken = genHashedToken(plainToken);
 
   const where: Prisma.TokenWhereInput = {

@@ -2,7 +2,7 @@ import { APIError } from "encore.dev/api";
 import type { PaginatedRequest, PaginationOpts } from "~lib/common/schemas";
 
 const PaginationParams = (keys: string[], opts: PaginatedRequest): PaginationOpts => {
-  const page = opts.page || 0;
+  const page = opts.page || 1;
   const limit = opts.limit || 10;
   const orderBy = opts.orderBy || "id";
   const orderDir = opts.orderDir || "desc";

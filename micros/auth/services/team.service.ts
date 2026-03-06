@@ -1,13 +1,15 @@
 import { prisma } from "../prisma/client";
 import type { Team } from "../prisma/interfaces";
-import { Auth } from "~lib/auth/auth";
 import type { PaginatedRequest } from "~lib/common/schemas";
 import Mapper from "~lib/utils/mapper.util";
 import Validate from "~lib/utils/validation.utils";
 
-const CreateTeam = async (name: string) => {
-  const user = Auth();
+interface CreateTeamArgs {
+  userId: string;
+  name: string;
+}
 
+const CreateTeam = async ({ name, userId }: CreateTeamArgs) => {
   return await prisma.$transaction(async (tx) => {
     const team = await tx.team.create({
       data: {
@@ -15,29 +17,18 @@ const CreateTeam = async (name: string) => {
       },
     });
 
-    const [teamMember, permission] = await Promise.all([
-      tx.teamMember.create({
-        data: {
-          userId: user.userID,
-          teamId: team.id,
-        },
-      }),
-      tx.permission.findFirst({
-        where: {
-          action: "manage",
-          subject: "team",
-        },
-      }),
-    ]);
+    const teamMember = await tx.teamMember.create({
+      data: {
+        userId,
+        teamId: team.id,
+      },
+    });
 
-    if (!permission) {
-      throw new Error("No permission found");
-    }
-
-    await tx.access.create({
+    await tx.claim.create({
       data: {
         teamMemberId: teamMember.id,
-        permissionId: permission.id,
+        action: "owner",
+        subject: "team",
       },
     });
 
@@ -45,13 +36,11 @@ const CreateTeam = async (name: string) => {
   });
 };
 
-const GetTeamsPaginated = async (params: PaginatedRequest) => {
-  const user = Auth();
-
+const GetTeamsPaginated = async (userId: string, params: PaginatedRequest) => {
   const where = {
     members: {
       some: {
-        userId: user.userID,
+        userId,
       },
     },
   };

@@ -28,10 +28,47 @@ const GetUserByEmail = async (email: string) => {
   });
 };
 
+interface GetClaimsArgs {
+  userId: string;
+  selectedTeamId: string | null;
+}
+
+const GetClaims = async ({ userId, selectedTeamId }: GetClaimsArgs) => {
+  if (!selectedTeamId) {
+    return [];
+  }
+
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+    include: {
+      teams: {
+        where: {
+          teamId: selectedTeamId,
+        },
+        include: {
+          claims: {
+            select: {
+              action: true,
+              subject: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!user) return [];
+
+  return user.teams[0].claims.map((claim) => `${claim.action}:${claim.subject}`);
+};
+
 const UserService = {
   CheckIfUserExists,
   HashPassword,
   GetUserByEmail,
+  GetClaims,
 };
 
 export default UserService;

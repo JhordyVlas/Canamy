@@ -1,7 +1,8 @@
 import { APIError, type Cookie, ErrCode, Gateway } from "encore.dev/api";
 import { authHandler } from "encore.dev/auth";
 import TokenService from "./services/token.service";
-import type { AuthData } from "~lib/auth/auth";
+import UserService from "./services/user.service";
+import type { AuthData } from "~lib/auth/facade";
 import t from "~lib/localization/helper.localization";
 
 interface AuthParams {
@@ -9,8 +10,15 @@ interface AuthParams {
 }
 
 export const authGateway = authHandler<AuthParams, AuthData>(async ({ session }) => {
-  const user = await TokenService.ValidateToken(session.value);
+  const user = await TokenService.ValidateToken({
+    plainToken: session.value,
+  });
   if (!user) throw new APIError(ErrCode.Unauthenticated, t("unauthenticated"));
+
+  const claims = await UserService.GetClaims({
+    userId: user.id,
+    selectedTeamId: user.selectedTeamId,
+  });
 
   return {
     userID: user.id,
@@ -20,6 +28,7 @@ export const authGateway = authHandler<AuthParams, AuthData>(async ({ session })
     email: user.email,
     verifiedAt: user.verifiedAt,
     language: user.language,
+    claims,
   };
 });
 

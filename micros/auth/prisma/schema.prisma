@@ -34,10 +34,10 @@ model User {
     createdAt      DateTime  @default(now()) @map("created_at")
     updatedAt      DateTime  @updatedAt @map("updated_at")
 
-    teams           TeamMember[]
-    invitedUsers    TeamMember[] @relation("invitedBy")
-    accessesGranted Access[]     @relation("grantedBy")
-    tokens          Token[]
+    teams         TeamMember[]
+    invitedUsers  TeamMember[] @relation("invitedBy")
+    tokens        Token[]
+    grantedClaims Claim[]      @relation("grantedBy")
 
     @@index([email])
     @@map("users")
@@ -54,14 +54,6 @@ model Team {
     @@map("teams")
 }
 
-enum Action {
-    manage
-    create
-    read
-    update
-    delete
-}
-
 model TeamMember {
     id        String   @id @default(uuid(7))
     userId    String   @map("user_id")
@@ -69,42 +61,13 @@ model TeamMember {
     addedAt   DateTime @default(now()) @map("added_at")
     invitedBy String?  @map("invited_by")
 
-    user          User     @relation(fields: [userId], references: [id])
-    team          Team     @relation(fields: [teamId], references: [id])
-    invitedByUser User?    @relation(name: "invitedBy", fields: [invitedBy], references: [id])
-    accesses      Access[]
+    user          User    @relation(fields: [userId], references: [id])
+    team          Team    @relation(fields: [teamId], references: [id])
+    invitedByUser User?   @relation(name: "invitedBy", fields: [invitedBy], references: [id])
+    claims        Claim[]
 
     @@unique([userId, teamId])
     @@map("team_members")
-}
-
-model Permission {
-    id        String   @id @default(uuid(7))
-    action    Action
-    subject   String
-    createdAt DateTime @default(now()) @map("created_at")
-    updatedAt DateTime @updatedAt @map("updated_at")
-    accesses  Access[]
-
-    @@unique([action, subject])
-    @@index([action, subject])
-    @@map("permissions")
-}
-
-model Access {
-    teamMemberId String    @map("team_member_id")
-    permissionId String    @map("permission_id")
-    grantedAt    DateTime  @default(now()) @map("granted_at")
-    revokedAt    DateTime? @map("revoked_at")
-    grantedBy    String?   @map("granted_by")
-
-    teamMember    TeamMember @relation(fields: [teamMemberId], references: [id])
-    permission    Permission @relation(fields: [permissionId], references: [id])
-    gratendByUser User?      @relation(name: "grantedBy", fields: [grantedBy], references: [id])
-
-    @@unique([teamMemberId, permissionId])
-    @@index([teamMemberId, permissionId])
-    @@map("access")
 }
 
 model Token {
@@ -119,4 +82,34 @@ model Token {
     @@index([userId, value])
     @@index([value])
     @@map("tokens")
+}
+
+enum Action {
+    owner
+    manage
+    create
+    read
+    update
+    delete
+}
+
+enum Subject {
+    team
+}
+
+model Claim {
+    id           String    @id @default(uuid(7))
+    teamMemberId String    @map("team_member_id")
+    action       Action
+    subject      Subject
+    grantedAt    DateTime  @default(now()) @map("granted_at")
+    revokedAt    DateTime? @map("revoked_at")
+    grantedBy    String?   @map("granted_by")
+
+    teamMember    TeamMember @relation(fields: [teamMemberId], references: [id])
+    grantedByUser User?      @relation(name: "grantedBy", fields: [grantedBy], references: [id])
+
+    @@unique([teamMemberId, action, subject])
+    @@index([action, subject])
+    @@map("claims")
 }
